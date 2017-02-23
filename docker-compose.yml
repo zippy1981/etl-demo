@@ -1,0 +1,46 @@
+version: "2"
+
+services:
+    db2:
+        image: ibmcom/db2express-c
+        ports:
+            - 5000:5000
+        environment:
+            LICENSE: accept
+            DB2INST1_PASSWORD: ibm1sIbm
+        networks:
+            - demonet
+    mssql:
+        build: ./provision/sqlserver
+        ports:
+            - "11433:1433"
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=a1waysB3Encrypting
+        volumes:
+            - ./provision/sqlserver/data:/var/opt/mssql
+    postgres:
+        image: postgres:alpine
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRESQL_USER: etl
+            POSTGRESQL_PASS: 3tlP@ssword
+            POSTGRESQL_DB: tupleicious
+        volumes:
+            - ./provision/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+        networks:
+            - demonet
+    sftp:
+        image: atmoz/sftp:alpine
+        volumes:
+            - ./provision/sftp/etl:/home/etl
+        ports:
+            - "2222:22"
+        command: etl:etlPassword:1001
+        networks:
+            - demonet
+networks:
+    demonet:
+        driver: bridge
+
