@@ -1,6 +1,13 @@
 version: "2"
 
 services:
+    adminer:
+        build: ./provision/adminer
+        ports:
+            - 8001:8080
+        networks:
+            - demonet
+        
     db2:
         image: ibmcom/db2express-c
         ports:
@@ -19,6 +26,8 @@ services:
             - SA_PASSWORD=a1waysB3Encrypting
         volumes:
             - ./provision/sqlserver/data:/var/opt/mssql
+        networks:
+            - demonet
     postgres:
         image: postgres:alpine
         ports:
